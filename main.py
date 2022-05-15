@@ -14,8 +14,10 @@ def publish_comics_to_vk():
 
     vk_access_token = os.environ.get("VK_ACCESS_TOKEN")
     vk_api_version = 5.131
+    vk_group_name = 'XKCD'
     vk_instance = VkApi(access_token=vk_access_token, api_version=vk_api_version)
-    vk_instance.get_groups()
+    group_id = vk_instance.get_group_id(group_name=vk_group_name)
+    print(group_id)
 
     comics_path = 'Files/'
     comics_number = '353'
