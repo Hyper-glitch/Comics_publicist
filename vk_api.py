@@ -17,7 +17,8 @@ class VkApi:
     def get_group_id(self, group_name):
         endpoint = 'groups.get'
         url = urllib.urljoin(self.base_url, endpoint)
-        params = dict(self.base_params.items() | {'extended': 1}.items())
+        params = {'extended': 1}
+        params.update(self.base_params)
         response = self.session.get(url=url, params=params)
 
         if response.json().get('error'):
@@ -32,7 +33,8 @@ class VkApi:
     def get_upload_img_url(self, group_id):
         endpoint = 'photos.getWallUploadServer'
         url = urllib.urljoin(self.base_url, endpoint)
-        params = dict(self.base_params.items() | {'group_id': group_id}.items())
+        params = {'group_id': group_id}
+        params.update(self.base_params)
         response = self.session.get(url=url, params=params)
 
         if response.json().get('error'):
