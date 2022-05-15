@@ -12,10 +12,16 @@ class VkApi:
         }
         self.session = requests.Session()
 
-    def get_groups(self):
-
+    def get_group_id(self, group_name):
         endpoint = 'groups.get'
         url = urllib.urljoin(self.base_url, endpoint)
+        self.base_params.update({'extended': 1})
         response = self.session.get(url=url, params=self.base_params)
-        response.raise_for_status()
-        return response.json()
+
+        groups = response.json().get('response')['items']
+        for group in groups:
+            if group_name in group['name']:
+                return group['id']
+
+    def get_upload_img_url(self):
+        pass
