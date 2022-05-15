@@ -15,10 +15,6 @@ def publish_comics_to_vk():
     vk_access_token = os.environ.get("VK_ACCESS_TOKEN")
     vk_api_version = 5.131
     vk_group_name = 'XKCD'
-    vk_instance = VkApi(access_token=vk_access_token, api_version=vk_api_version)
-    group_id = vk_instance.get_group_id(group_name=vk_group_name)
-    upload_img_url = vk_instance.get_upload_img_url(group_id=group_id)
-    print(group_id)
 
     comics_path = 'Files/'
     comics_number = '353'
@@ -26,6 +22,12 @@ def publish_comics_to_vk():
     Path(comics_path).mkdir(parents=True, exist_ok=True)
     comics_img = get_comics_img(comics_number=comics_number)
     save_comics_content(url=comics_img, path=comics_path)
+
+    vk_instance = VkApi(access_token=vk_access_token, api_version=vk_api_version)
+    group_id = vk_instance.get_group_id(group_name=vk_group_name)
+    upload_img_url = vk_instance.get_upload_img_url(group_id=group_id)
+    photo = vk_instance.upload_img_to_server(upload_url=upload_img_url)
+    vk_instance.save_img_to_public(group_id=group_id, photo=photo)
 
 
 def save_comics_content(url, path):
