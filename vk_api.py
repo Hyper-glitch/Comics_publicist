@@ -2,7 +2,7 @@ import urllib.parse as urllib
 
 import requests
 
-from exceptions import VkUserAuthFailed
+from exceptions import VkUserAuthFailed, PhotoUploadError
 
 
 class VkApi:
@@ -14,18 +14,23 @@ class VkApi:
         }
         self.session = requests.Session()
 
+    def get_json(self, url, params):
+        response = self.session.get(url=url, params=params)
+        jsonify_response = response.json()
+
+        if jsonify_response.get('error'):
+            message = 'User authorization failed: no access_token passed.'
+            raise VkUserAuthFailed(message=message)
+
+        return jsonify_response['response']
+
     def get_group_id(self, group_name):
         endpoint = 'groups.get'
         url = urllib.urljoin(self.base_url, endpoint)
         params = {'extended': 1}
         params.update(self.base_params)
-        response = self.session.get(url=url, params=params)
+        groups = self.get_json(url=url, params=params).get('items')
 
-        if response.json().get('error'):
-            message = 'User authorization failed: no access_token passed.'
-            raise VkUserAuthFailed(message=message)
-
-        groups = response.json().get('response')['items']
         for group in groups:
             if group_name in group['name']:
                 return group['id']
@@ -35,10 +40,23 @@ class VkApi:
         url = urllib.urljoin(self.base_url, endpoint)
         params = {'group_id': group_id}
         params.update(self.base_params)
-        response = self.session.get(url=url, params=params)
+        upload_img_url = self.get_json(url=url, params=self.base_params).get('upload_url')
+        return upload_img_url
 
-        if response.json().get('error'):
-            message = 'User authorization failed: no access_token passed.'
-            raise VkUserAuthFailed(message=message)
+    def upload_img_to_server(self, upload_url):
+        with open('Files/python.png', 'rb') as image:
+            params = {'photo': image}
+            response = self.session.post(url=upload_url, files=params)
+        photo = response.json()['photo']
+        if not photo:
+            raise PhotoUploadError('The photo did not upload to the server')
 
-        return response.json()['response'].get('upload_url')
+        return photo
+
+    def save_img_to_public(self, group_id, photo):
+        endpoint = 'photos.saveWallPhoto'
+        url = urllib.urljoin(self.base_url, endpoint)
+        params = {'photo': photo, 'group_id': group_id}
+        params.update(self.base_params)
+        response = self.session.post(url=url, params=params)
+
