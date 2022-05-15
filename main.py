@@ -1,10 +1,22 @@
+import os
 import urllib.parse as urllib
 from pathlib import Path
 
 import requests
+from dotenv import load_dotenv
+
+from vk_api import VkApi
 
 
-def main():
+def publish_comics_to_vk():
+    """The main logic for running the whole program."""
+    load_dotenv()
+
+    vk_access_token = os.environ.get("VK_ACCESS_TOKEN")
+    vk_api_version = 5.131
+    vk_instance = VkApi(access_token=vk_access_token, api_version=vk_api_version)
+    vk_instance.get_groups()
+
     comics_path = 'Files/'
     comics_number = '353'
 
@@ -33,4 +45,4 @@ def get_comics_img(comics_number):
 
 
 if __name__ == '__main__':
-    main()
+    publish_comics_to_vk()
