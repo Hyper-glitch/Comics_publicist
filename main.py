@@ -17,6 +17,7 @@ def publish_comics_to_vk():
     vk_group_name = 'XKCD'
     vk_instance = VkApi(access_token=vk_access_token, api_version=vk_api_version)
     group_id = vk_instance.get_group_id(group_name=vk_group_name)
+    upload_img_url = vk_instance.get_upload_img_url(group_id=group_id)
     print(group_id)
 
     comics_path = 'Files/'
