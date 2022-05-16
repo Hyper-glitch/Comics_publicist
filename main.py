@@ -26,8 +26,8 @@ def publish_comics_to_vk():
     vk_instance = VkApi(access_token=vk_access_token, api_version=vk_api_version)
     group_id = vk_instance.get_group_id(group_name=vk_group_name)
     upload_img_url = vk_instance.get_upload_img_url(group_id=group_id)
-    photo = vk_instance.upload_img_to_server(upload_url=upload_img_url)
-    vk_instance.save_img_to_public(group_id=group_id, photo=photo)
+    upload_img_info = vk_instance.upload_img_to_server(upload_url=upload_img_url)
+    saved_img = vk_instance.save_img_to_public(upload_img_info=upload_img_info)
 
 
 def save_comics_content(url, path):
