@@ -7,5 +7,9 @@ class VkUserAuthFailed(BaseCustomException):
     pass
 
 
-class PhotoUploadError(BaseCustomException):
+class UploadPhotoError(BaseCustomException):
+    pass
+
+
+class SavePhotoError(BaseCustomException):
     pass
