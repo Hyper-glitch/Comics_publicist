@@ -2,7 +2,7 @@ import urllib.parse as urllib
 
 import requests
 
-from exceptions import VkUserAuthFailed, PhotoUploadError
+from exceptions import VkUserAuthFailed, UploadPhotoError, SavePhotoError
 
 
 class VkApi:
@@ -47,16 +47,21 @@ class VkApi:
         with open('Files/python.png', 'rb') as image:
             params = {'photo': image}
             response = self.session.post(url=upload_url, files=params)
-        photo = response.json()['photo']
-        if not photo:
-            raise PhotoUploadError('The photo did not upload to the server')
+        upload_img_info = response.json()
+        if not upload_img_info['photo']:
+            raise UploadPhotoError('The photo did not upload to the server')
 
-        return photo
+        return upload_img_info
 
-    def save_img_to_public(self, group_id, photo):
+    def save_img_to_public(self, upload_img_info):
         endpoint = 'photos.saveWallPhoto'
         url = urllib.urljoin(self.base_url, endpoint)
-        params = {'photo': photo, 'group_id': group_id}
-        params.update(self.base_params)
-        response = self.session.post(url=url, params=params)
+        upload_img_info.update(self.base_params)
+        response = self.session.post(url=url, params=upload_img_info)
+        error = response.json().get('error')
+        if error:
+            message = error['error_msg']
+            raise SavePhotoError(f'The photo did not save on the server, {message}')
 
+        saved_img = response.json()['response'][0]
+        return saved_img
