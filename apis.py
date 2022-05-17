@@ -1,5 +1,4 @@
 import urllib.parse as urllib
-from pathlib import Path
 
 import requests
 
