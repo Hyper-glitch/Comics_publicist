@@ -1,4 +1,5 @@
 import urllib.parse as urllib
+from pathlib import Path
 
 import requests
 
@@ -86,3 +87,26 @@ class VkApi:
             message = error['error_msg']
             raise exception(message)
         return
+
+
+class ComicsApi:
+    def __init__(self):
+        self.base_url = 'https://xkcd.com/'
+        self.data_format = '/info.0.json'
+
+    def get_comic(self, comic_number=None):
+        if comic_number:
+            url = f'{self.base_url}{comic_number}{self.data_format}'
+        else:
+            url = urllib.urljoin(self.base_url, self.data_format)
+        response = requests.get(url=url)
+        response.raise_for_status()
+        return response.json()
+
+    @staticmethod
+    def save_comics_content(url, path):
+        comics = requests.get(url=url)
+        comics_name = urllib.urlparse(url).path.split('/')[-1]
+        save_path = Path(path, comics_name)
+        with open(save_path, 'wb') as image:
+            image.write(comics.content)
