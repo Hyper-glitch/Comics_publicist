@@ -1,4 +1,6 @@
+"""Module with VK and comics site APIs."""
 import urllib.parse as urllib
+from pathlib import Path
 
 import requests
 
@@ -6,6 +8,7 @@ from exceptions import (VkUserAuthFailed, UploadPhotoError, SavePhotoError, Post
 
 
 class VkApi:
+    """Class to interact with VK API."""
     def __init__(self, access_token, api_version):
         self.base_url = 'https://api.vk.com/method/'
         self.base_params = {
@@ -14,7 +17,8 @@ class VkApi:
         }
         self.session = requests.Session()
 
-    def get_json(self, url, params):
+    def get_json(self, url: str, params: dict) -> dict:
+        """Get content in json format."""
         response = self.session.get(url=url, params=params)
         jsonify_response = response.json()
         error = jsonify_response.get('error')
@@ -89,11 +93,15 @@ class VkApi:
 
 
 class ComicsApi:
+    """Class to interact with xkcd comics API."""
     def __init__(self):
         self.base_url = 'https://xkcd.com/'
         self.data_format = '/info.0.json'
 
-    def get_comic(self, comic_number=None):
+    def get_comic(self, comic_number: int = None) -> dict:
+        """Get comic information in json format.
+        :param comic_number: - comic index number.
+        """
         if comic_number:
             url = f'{self.base_url}{comic_number}{self.data_format}'
         else:
@@ -103,7 +111,11 @@ class ComicsApi:
         return response.json()
 
     @staticmethod
-    def save_comics_content(url, path):
+    def save_comics_content(url: str, path: Path):
+        """Save comic image in folder.
+        :param url: - url for getting image.
+        :param path: - save image path.
+        """
         comics = requests.get(url=url)
         with open(path, 'wb') as image:
             image.write(comics.content)
