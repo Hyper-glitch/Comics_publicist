@@ -41,8 +41,8 @@ class VkApi:
         upload_img_url = self.get_json(url=url, params=self.base_params).get('upload_url')
         return upload_img_url
 
-    def upload_img_to_server(self, upload_url):
-        with open('Files/python.png', 'rb') as image:
+    def upload_img_to_server(self, img_path, upload_url):
+        with open(f'{img_path}', 'rb') as image:
             params = {'photo': image}
             response = self.session.post(url=upload_url, files=params)
         upload_img_info = response.json()
@@ -106,7 +106,5 @@ class ComicsApi:
     @staticmethod
     def save_comics_content(url, path):
         comics = requests.get(url=url)
-        comics_name = urllib.urlparse(url).path.split('/')[-1]
-        save_path = Path(path, comics_name)
-        with open(save_path, 'wb') as image:
+        with open(path, 'wb') as image:
             image.write(comics.content)
