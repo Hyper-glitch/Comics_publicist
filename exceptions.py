@@ -1,3 +1,6 @@
+"""Module for custom exceptions, that raises in VK service."""
+
+
 class VkUserAuthFailed(Exception):
     def __init__(self, message):
         self.message = 'You have not access to API service'
