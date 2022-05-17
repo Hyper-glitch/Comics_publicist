@@ -16,7 +16,6 @@ def publish_comics_vk_public():
     vk_api_version = 5.131
     vk_group_name = 'XKCD'
     start_random_range = 1
-
     comics_dir = 'Files/'
     Path(comics_dir).mkdir(parents=True, exist_ok=True)
 
