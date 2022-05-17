@@ -17,11 +17,8 @@ class VkApi:
     def get_json(self, url, params):
         response = self.session.get(url=url, params=params)
         jsonify_response = response.json()
-
-        if jsonify_response.get('error'):
-            message = 'User authorization failed: no access_token passed.'
-            raise VkUserAuthFailed(message=message)
-
+        error = response.json().get('error')
+        self.check_on_error(error, exception=VkUserAuthFailed)
         return jsonify_response['response']
 
     def get_group_id(self, group_name):
@@ -48,8 +45,11 @@ class VkApi:
             params = {'photo': image}
             response = self.session.post(url=upload_url, files=params)
         upload_img_info = response.json()
-        if not upload_img_info['photo']:
-            raise UploadPhotoError('The photo did not upload to the server')
+
+        error = response.json().get('error')
+        if error:
+            message = 'The photo did not upload to the server'
+            raise UploadPhotoError(message)
 
         return upload_img_info
 
@@ -63,5 +63,32 @@ class VkApi:
             message = error['error_msg']
             raise SavePhotoError(f'The photo did not save on the server, {message}')
 
-        saved_img = response.json()['response'][0]
-        return saved_img
+        saved_img_info = response.json()['response'][0]
+        return saved_img_info
+
+    def post_img(self, message, media_id, owner_id, group_id):
+        endpoint = 'wall.post'
+        url = urllib.urljoin(self.base_url, endpoint)
+        attachments = {'type': 'photo', 'owner_id': owner_id, 'media_id': media_id}
+        params = {
+            'owner_id': -group_id,
+            'from_group': 1,
+            'message': message,
+            'attachments': attachments,
+        }
+        params.update(self.base_params)
+        response = self.session.post(url=url, params=params)
+        error = response.json().get('error')
+        if error:
+            message = error['error_msg']
+            raise SavePhotoError(f'The photo did not post on the server, {message}')
+
+        post_id = response.json()['response']['post_id']
+        return post_id
+
+    @staticmethod
+    def check_on_error(error, exception):
+        if error:
+            message = error['error_msg']
+            raise exception(message)
+        return
