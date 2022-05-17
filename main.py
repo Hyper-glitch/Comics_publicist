@@ -20,14 +20,18 @@ def publish_comics_to_vk():
     comics_number = '353'
 
     Path(comics_path).mkdir(parents=True, exist_ok=True)
-    comics_img = get_comics_img(comics_number=comics_number)
-    save_comics_content(url=comics_img, path=comics_path)
+    comics_info = get_comics_info(comics_number=comics_number)
+    save_comics_content(url=comics_info['img'], path=comics_path)
 
     vk_instance = VkApi(access_token=vk_access_token, api_version=vk_api_version)
     group_id = vk_instance.get_group_id(group_name=vk_group_name)
     upload_img_url = vk_instance.get_upload_img_url(group_id=group_id)
     upload_img_info = vk_instance.upload_img_to_server(upload_url=upload_img_url)
-    saved_img = vk_instance.save_img_to_public(upload_img_info=upload_img_info)
+    saved_img_info = vk_instance.save_img_to_public(upload_img_info=upload_img_info)
+    post_id = vk_instance.post_img(
+        message=comics_info['alt'], media_id=saved_img_info['id'],
+        owner_id=saved_img_info['owner_id'], group_id=group_id,
+    )
 
 
 def save_comics_content(url, path):
@@ -38,15 +42,13 @@ def save_comics_content(url, path):
         image.write(comics.content)
 
 
-def get_comics_img(comics_number):
+def get_comics_info(comics_number):
     base_url = 'https://xkcd.com/'
     metadata = '/info.0.json'
     url = f'{base_url}{comics_number}{metadata}'
     response = requests.get(url=url)
     response.raise_for_status()
-    comment = response.json()['alt']
-    image = response.json()['img']
-    return image
+    return response.json()
 
 
 if __name__ == '__main__':
