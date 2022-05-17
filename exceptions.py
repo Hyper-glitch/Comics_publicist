@@ -4,7 +4,9 @@ class BaseCustomException(Exception):
 
 
 class VkUserAuthFailed(BaseCustomException):
-    pass
+    def __init__(self, message):
+        self.message = f'User authorization failed: no access_token passed, {message}'
+        super().__init__(message)
 
 
 class UploadPhotoError(BaseCustomException):
