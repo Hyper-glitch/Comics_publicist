@@ -63,8 +63,9 @@ class VkApi:
 
     def post_img(self, message, media_id, owner_id, group_id):
         endpoint = 'wall.post'
+        media_type = 'photo'
         url = urllib.urljoin(self.base_url, endpoint)
-        attachments = {'type': 'photo', 'owner_id': owner_id, 'media_id': media_id}
+        attachments = f'{media_type}{owner_id}_{media_id}'
         params = {
             'owner_id': -group_id,
             'from_group': 1,
