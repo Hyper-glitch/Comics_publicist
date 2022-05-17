@@ -2,7 +2,7 @@ import urllib.parse as urllib
 
 import requests
 
-from exceptions import VkUserAuthFailed, UploadPhotoError, SavePhotoError
+from exceptions import (VkUserAuthFailed, UploadPhotoError, SavePhotoError, PostWallImgError)
 
 
 class VkApi:
@@ -17,7 +17,7 @@ class VkApi:
     def get_json(self, url, params):
         response = self.session.get(url=url, params=params)
         jsonify_response = response.json()
-        error = response.json().get('error')
+        error = jsonify_response.get('error')
         self.check_on_error(error, exception=VkUserAuthFailed)
         return jsonify_response['response']
 
@@ -47,10 +47,7 @@ class VkApi:
         upload_img_info = response.json()
 
         error = response.json().get('error')
-        if error:
-            message = 'The photo did not upload to the server'
-            raise UploadPhotoError(message)
-
+        self.check_on_error(error, exception=UploadPhotoError)
         return upload_img_info
 
     def save_img_to_public(self, upload_img_info):
@@ -58,11 +55,9 @@ class VkApi:
         url = urllib.urljoin(self.base_url, endpoint)
         upload_img_info.update(self.base_params)
         response = self.session.post(url=url, params=upload_img_info)
-        error = response.json().get('error')
-        if error:
-            message = error['error_msg']
-            raise SavePhotoError(f'The photo did not save on the server, {message}')
 
+        error = response.json().get('error')
+        self.check_on_error(error, exception=SavePhotoError)
         saved_img_info = response.json()['response'][0]
         return saved_img_info
 
@@ -78,11 +73,9 @@ class VkApi:
         }
         params.update(self.base_params)
         response = self.session.post(url=url, params=params)
-        error = response.json().get('error')
-        if error:
-            message = error['error_msg']
-            raise SavePhotoError(f'The photo did not post on the server, {message}')
 
+        error = response.json().get('error')
+        self.check_on_error(error, exception=PostWallImgError)
         post_id = response.json()['response']['post_id']
         return post_id
 
