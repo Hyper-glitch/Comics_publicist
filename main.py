@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from apis import VkApi, ComicsApi
 
 
-def publish_comics_vk_public():
+def post_comics_vk_public():
     """The main logic of getting random comic from 'https://xkcd.com/' and post it on the public wall in VK."""
     load_dotenv()
 
@@ -46,4 +46,4 @@ def publish_comics_vk_public():
 
 
 if __name__ == '__main__':
-    publish_comics_vk_public()
+    post_comics_vk_public()
