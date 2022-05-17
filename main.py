@@ -37,10 +37,10 @@ def publish_comics_vk_public():
         message=last_comic['alt'], media_id=saved_img_info['id'],
         owner_id=saved_img_info['owner_id'], group_id=group_id,
     )
+    if os.path.isfile(comic_path) or os.path.islink(comic_path):
+        os.remove(comic_path)
     return
 
 
 if __name__ == '__main__':
-    while True:
-        publish_comics_vk_public()
-        time.sleep(5)
+    publish_comics_vk_public()
