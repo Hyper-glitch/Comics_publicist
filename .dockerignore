@@ -1,4 +1,5 @@
 .venv/
+venv/
 .idea/
 .vscode/
 .devcontainer/
@@ -13,3 +14,7 @@ htmlcov/
 .DS_Store
 .github/
 .gitignore
+Dockerfile
+.dockerignore
+.git
+*.md
