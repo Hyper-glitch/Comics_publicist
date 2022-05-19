@@ -65,7 +65,7 @@ class VkApi:
             response.raise_for_status()
         upload_img_info = response.json()
 
-        error = response.json().get('error')
+        error = upload_img_info.get('error')
         self.check_on_error(error, exception=UploadPhotoError)
         return upload_img_info
 
@@ -78,10 +78,10 @@ class VkApi:
         upload_img_info.update(self.base_params)
         response = self.session.post(url=url, params=upload_img_info)
         response.raise_for_status()
-        error = response.json().get('error')
+        saved_img_info = response.json()
+        error = saved_img_info.get('error')
         self.check_on_error(error, exception=SavePhotoError)
-        saved_img_info = response.json()['response'][0]
-        return saved_img_info
+        return saved_img_info['response'][0]
 
     def post_img(self, message, media_id, owner_id, group_id):
         """Make post request for saving an image to the public vk.
@@ -116,7 +116,6 @@ class VkApi:
         if error:
             message = error['error_msg']
             raise exception(message)
-        return
 
 
 class ComicsApi:
