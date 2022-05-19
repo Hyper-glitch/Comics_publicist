@@ -23,3 +23,7 @@ class PostWallImgError(Exception):
     def __init__(self, message):
         self.message = 'The photo did not post on the wall'
         super().__init__(f'{self.message}, {message.strip()}')
+
+
+class UnexpectedError(Exception):
+    pass
