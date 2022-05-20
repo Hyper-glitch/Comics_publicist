@@ -88,8 +88,7 @@ class VkApi:
         :param message: - The text of the message (required if the attachments parameter is not set).
         :param media_id: - Media application identifier.
         :param owner_id: - ID of the owner of the media application.
-        :param group_id: - The ID of the user or community on whose wall the post is to be posted.
-        :returns: post_id - Upon successful completion, returns the ID of the created record."""
+        :param group_id: - The ID of the user or community on whose wall the post is to be posted."""
         endpoint = 'wall.post'
         media_type = 'photo'
         url = urllib.urljoin(self.base_url, endpoint)
@@ -105,8 +104,6 @@ class VkApi:
         response.raise_for_status()
         error = response.json().get('error')
         self.check_on_error(error, exception=PostWallImgError)
-        post_id = response.json()['response']['post_id']
-        return post_id
 
     @staticmethod
     def check_on_error(error: dict, exception):
