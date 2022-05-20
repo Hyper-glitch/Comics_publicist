@@ -10,8 +10,11 @@ from apis import VkApi, ComicsApi
 from exceptions import UnexpectedError
 
 
-def post_comics_vk_public():
-    """The main logic of getting random comic from 'https://xkcd.com/' and post it on the public wall in VK."""
+def post_comics_vk_public(vk_access_token: str, publication_frequency: float):
+    """The main logic of getting random comic from 'https://xkcd.com/' and post it on the public wall in VK.
+    :param vk_access_token: - Personal token to interact with VK API methods.
+    :param publication_frequency: - Posting frequency into VK public."""
+
     vk_api_version = 5.131
     vk_group_name = 'XKCD'
     start_random_range = 1
@@ -50,4 +53,4 @@ if __name__ == '__main__':
     load_dotenv()
     vk_access_token = os.environ.get("VK_ACCESS_TOKEN")
     publication_frequency = float(os.environ.get("PUBLICATION_FREQUENCY"))
-    post_comics_vk_public()
+    post_comics_vk_public(vk_access_token=vk_access_token, publication_frequency=publication_frequency)
